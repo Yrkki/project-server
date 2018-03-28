@@ -5,9 +5,12 @@ const path = require('path');
 
 const location = '../public/';
 
-/* GET cv. */
+const obfuscator = require('../obfuscator');
+
 router.get('/', function (req, res) {
     var data = require(path.join(location,'json/cv.json'));
+    data = obfuscator.obfuscate(data);
+    
     res.send(data);
 });
 

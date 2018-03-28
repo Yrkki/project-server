@@ -3,14 +3,16 @@ var router = express.Router();
 
 const path = require('path');
 
-var location = '../public/';
+const location = '../public/';
 
-/* GET projects listing. */
+const obfuscator = require('../obfuscator');
+
 router.get('/', function (req, res) {
-    var data = require(path.join(location,'json/projects.json'));
+    var data = require(path.join(location, 'json/projects.json'));
 
     // preprocess
     data = JSON.parse(JSON.stringify(data).replaceAll('"0"', '""').replaceAll('"n/a"', '""'));
+    data = obfuscator.obfuscate(data);
 
     res.send(data);
 });
