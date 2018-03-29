@@ -1,14 +1,10 @@
-module.exports = {
-    obfuscate: obfuscate
-}
-
-var active = false;
+var active = true;
 
 const li = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ";
 
 function obfuscate(data) {
     if (typeof data == 'number')
-        return data
+        return Math.round(data*(1 + (Math.random()*.2 - .1))); // 10% random scattring
     else if (/(^#[0-9A-F]{8}$)|(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(data))  // color
         return data
     else if (typeof data == 'string')
@@ -34,16 +30,13 @@ function obfuscateLine(str) {
 
     var outArray = [];
 
-    for (var i = 0, j = 0; i < str.length; i++) {
-        var s = str[i];
-
-        if (!'[]{}:"'.includes(s)) {
-            outArray.push(li[j % li.length]);
-            j++;
-        } else {
-            outArray.push(s);
-        }
+    for (var i = 0; i < str.length; i++) {
+        outArray.push(li[i % li.length]);
     }
 
     return outArray.join('');
+}
+
+module.exports = {
+    obfuscate: obfuscate
 }

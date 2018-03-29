@@ -3,12 +3,10 @@ var router = express.Router();
 
 const path = require('path');
 
-const location = '../public/';
-
-const obfuscator = require('../obfuscator');
+const obfuscator = require('../javascripts/obfuscator');
 
 router.get('/', function (req, res) {
-    var data = require(path.join(location, 'json/gantt-chart.json'));
+    var data = require(path.join(req.app.get('location'), 'json/gantt-chart.json'));
 
     // preprocess
     data = JSON.parse(JSON.stringify(data).replaceAll('"0"', '""').replaceAll('"n/a"', '""'));
