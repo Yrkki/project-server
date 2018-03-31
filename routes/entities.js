@@ -6,7 +6,7 @@ const path = require('path');
 const obfuscator = require('../javascripts/obfuscator');
 
 router.get('/', function (req, res) {
-    var data = require(path.resolve(req.app.get('json'), 'gantt-chart.json'));
+    var data = require(path.resolve(req.app.get('json'), 'entities.json'));
 
     data = obfuscator.obfuscateWhenNeeded(req.app, data);
 

@@ -13,6 +13,7 @@ var users = require('./routes/users');
 var cv = require('./routes/cv');
 var projects = require('./routes/projects');
 var ganttChart = require('./routes/gantt-chart');
+var entities = require('./routes/entities');
 
 var app = express();
 
@@ -38,6 +39,7 @@ app.use('/users', users);
 app.use('/cv', cv);
 app.use('/projects', projects);
 app.use('/gantt-chart', ganttChart);
+app.use('/entities', entities);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
