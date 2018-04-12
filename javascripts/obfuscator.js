@@ -15,7 +15,9 @@ function obfuscateWhenNeeded(app, data) {
 }
 
 function obfuscate(data) {
-    if (typeof data == 'number')
+    if (data === null)
+        return '';
+    else if (typeof data == 'number')
         return Math.round(data*(1 + (Math.random()*.2 - .1))); // 10% random scattring
     else if (/(^#[0-9A-F]{8}$)|(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(data))  // color
         return data
