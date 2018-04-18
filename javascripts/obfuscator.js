@@ -18,25 +18,25 @@ function obfuscate(data) {
     if (data === null)
         return '';
     else if (typeof data == 'number')
-        return Math.round(data*(1 + (Math.random()*.2 - .1))); // 10% random scattring
+        return Math.round(data * (1 + (Math.random() * .2 - .1))); // 10% random scattring
     else if (/(^#[0-9A-F]{8}$)|(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(data))  // color
         return data
     else if (typeof data == 'string')
         return obfuscateLine(data)
     else if (data instanceof Array)
         return data.map(_ => obfuscate(_))
-    else if (typeof data == 'object')
-        return toObject(Object.keys(data), Object.values(data).map(_ => obfuscate(_)))
+    else if (typeof data == 'object') {
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                if (!['Id'].includes(key))
+                    data[key] = obfuscate(data[key]);
+            }
+        }
+        return data;
+    }
     else
         return data;
 };
-
-function toObject(names, values) {
-    var result = {};
-    for (var i = 0; i < names.length; i++)
-        result[names[i]] = values[i];
-    return result;
-}
 
 function obfuscateLine(str) {
     var outArray = [];
