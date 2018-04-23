@@ -54,6 +54,20 @@ app.use(express.static(path.join(__dirname, app.get('location'))));
 
 app.use(cors());
 
+/* Redirect http to https */
+app.get('*', function (req, res, next) {
+  if (req.headers['x-forwarded-proto'] != 'https' && !req.hostname.includes('localhost')) {
+    var url = 'https://' + req.hostname;
+    var port = app.get('port');
+    if (port)
+      url += ":" + port;
+    url += req.url;
+    res.redirect(url);
+  }
+  else
+    next() /* Continue to other routes if we're not redirecting */
+});
+
 app.use('/', index);
 app.use('/users', users);
 
