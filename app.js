@@ -58,9 +58,9 @@ app.use(cors());
 app.get('*', function (req, res, next) {
   if (req.headers['x-forwarded-proto'] != 'https' && !req.hostname.includes('localhost')) {
     var url = 'https://' + req.hostname;
-    var port = app.get('port');
-    if (port)
-      url += ":" + port;
+    // var port = app.get('port');
+    // if (port)
+    //   url += ":" + port;
     url += req.url;
     res.redirect(url);
   }
