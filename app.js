@@ -11,6 +11,7 @@ var nconf = require('nconf');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var fs = require('fs');
+var compression = require('compression');
 
 var cv = require('./routes/cv');
 var projects = require('./routes/projects');
@@ -35,6 +36,10 @@ nconf.defaults({
     "location": "public"
   }
 });
+
+// compress responses
+app.use(compression());
+app.use(express.static(__dirname + '/public'));
 
 app.set('location', nconf.get('data:location'));
 
