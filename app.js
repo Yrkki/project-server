@@ -39,7 +39,6 @@ nconf.defaults({
 
 // compress responses
 app.use(compression());
-app.use(express.static(__dirname + '/public'));
 
 app.set('location', nconf.get('data:location'));
 
