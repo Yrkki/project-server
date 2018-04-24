@@ -3,6 +3,6 @@
         "port": 3000
     },
     "data": {
-      "location": "public"
+      "location": "../data/public"
   }
 }
