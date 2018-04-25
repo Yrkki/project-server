@@ -54,7 +54,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, app.get('location'))));
+app.use(express.static(path.join(__dirname, app.get('location')), { maxAge: '1w' }));
 
 app.use(cors());
 
