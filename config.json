@@ -1,8 +1,12 @@
 {
     "http": {
-        "port": 3000
+        "port": 3000,
+        "hosts": [
+            "localhost",
+            "192.168.1.2"
+        ]
     },
     "data": {
-      "location": "public"
-  }
+        "location": "public"
+    }
 }

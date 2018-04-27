@@ -60,7 +60,7 @@ app.use(cors());
 
 /* Redirect http to https */
 app.get('*', function (req, res, next) {
-  if (req.headers['x-forwarded-proto'] != 'https' && !req.hostname.includes('localhost')) {
+  if (req.headers['x-forwarded-proto'] != 'https' && !nconf.get('http:hosts').includes(req.hostname)) {
     var url = 'https://' + req.hostname;
     // var port = app.get('port');
     // if (port)
