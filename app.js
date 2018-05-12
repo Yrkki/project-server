@@ -16,6 +16,7 @@ var compression = require('compression');
 var cv = require('./routes/cv');
 var projects = require('./routes/projects');
 var ganttChart = require('./routes/gantt-chart');
+var generalTimeline = require('./routes/general-timeline');
 var entities = require('./routes/entities');
 var ui = require('./routes/ui');
 
@@ -78,6 +79,7 @@ app.use('/users', users);
 app.use('/cv', cv);
 app.use('/projects', projects);
 app.use('/gantt-chart', ganttChart);
+app.use('/general-timeline', generalTimeline);
 app.use('/entities', entities);
 app.use('/ui', ui);
 
