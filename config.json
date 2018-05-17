@@ -7,6 +7,7 @@
         ]
     },
     "data": {
-        "location": "public"
+        "location": "public",
+        "awsLocation": "https://cv-generator-life-adapter.herokuapp.com"
     }
 }

@@ -7,11 +7,10 @@ var bodyParser = require('body-parser');
 
 var cors = require('cors');
 var nconf = require('nconf');
-
-var index = require('./routes/index');
-var users = require('./routes/users');
 var fs = require('fs');
 var compression = require('compression');
+
+var index = require('./routes/index');
 
 var cv = require('./routes/cv');
 var projects = require('./routes/projects');
@@ -44,6 +43,7 @@ app.use(compression());
 app.set('appName', 'Project Server');
 
 app.set('location', nconf.get('data:location'));
+app.set('awsLocation', nconf.get('data:awsLocation'));
 
 app.set('json', path.join(app.get('location'), 'json'));
 
@@ -76,8 +76,6 @@ app.get('*', function (req, res, next) {
 });
 
 app.use('/', index);
-app.use('/users', users);
-
 app.use('/cv', cv);
 app.use('/projects', projects);
 app.use('/gantt-chart', ganttChart);
