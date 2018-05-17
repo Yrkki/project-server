@@ -41,7 +41,7 @@ nconf.defaults({
 // compress responses
 app.use(compression());
 
-app.set('appName', 'CV Generator');
+app.set('appName', 'Project Server');
 
 app.set('location', nconf.get('data:location'));
 
