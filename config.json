@@ -7,7 +7,10 @@
         ]
     },
     "data": {
-        "location": "public",
-        "awsLocation": "https://cv-generator-life-adapter.herokuapp.com"
+        "default": "public",
+        "internal": "public",
+        "local": "../data/deploy/public",
+        "lifeAdapterLocal": "http://localhost:2500",
+        "lifeAdapter": "https://cv-generator-life-adapter.herokuapp.com"
     }
 }

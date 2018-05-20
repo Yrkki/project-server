@@ -1,17 +1,40 @@
 const path = require('path');
+const http = require('http');
+const https = require('https');
+const url = require('url');
+const urlExists = require('url-exists');
 
 const li = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ";
 
-function obfuscateWhenNeeded(app, data) {
-    try {
-        var authPath = path.resolve(app.get('json'), 'auth.json');
-        delete require.cache[authPath];
-        var auth = require(authPath);
+function obfuscateWhenNeeded(currentPath, data) {
+    // console.log('Obfuscating...');
+
+    const a = 'json/auth.json';
+    if (currentPath.startsWith('http')) {
+        const authUrl = url.resolve(currentPath, a);
+        // console.log('Checking url:', authUrl);
+
+        const urlExistsPromise = url =>
+            new Promise((resolve, reject) =>
+                urlExists(url, (err, exists) =>
+                    err ? reject(err) : resolve(exists)));
+
+        return urlExistsPromise(authUrl).then(exists =>
+            exists ? data : obfuscate(JSON.parse(data)));
+    } else {
+        try {
+            const authPath = path.resolve(currentPath, a);
+            // console.log('Checking path:', authPath);
+
+            delete require.cache[authPath];
+            require(authPath);
+        }
+        catch (err) {
+            // console.log('Err:', err.message);
+            data = obfuscate(data);
+        }
+        return new Promise(resolve => data);
     }
-    catch (err) {
-        data = obfuscate(data);
-    }
-    return data;
 }
 
 function obfuscate(data) {

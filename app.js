@@ -11,13 +11,7 @@ var fs = require('fs');
 var compression = require('compression');
 
 var index = require('./routes/index');
-
-var cv = require('./routes/cv');
-var projects = require('./routes/projects');
-var ganttChart = require('./routes/gantt-chart');
-var generalTimeline = require('./routes/general-timeline');
-var entities = require('./routes/entities');
-var ui = require('./routes/ui');
+var json = require('./routes/json');
 
 var app = express();
 
@@ -30,10 +24,18 @@ nconf.argv().env();
 nconf.file({ file: 'config.json' });
 nconf.defaults({
   "http": {
-    "port": 3000
+    "port": 3000,
+    "hosts": [
+      "localhost",
+      "192.168.1.2"
+    ]
   },
   "data": {
-    "location": "public"
+    "default": "public",
+    "internal": "public",
+    "local": "../data/deploy/public",
+    "lifeAdapterLocal": "http://localhost:2500",
+    "lifeAdapter": "https://cv-generator-life-adapter.herokuapp.com"
   }
 });
 
@@ -42,13 +44,24 @@ app.use(compression());
 
 app.set('appName', 'Project Server');
 
-app.set('location', nconf.get('data:location'));
-app.set('awsLocation', nconf.get('data:awsLocation'));
+app.set('default', nconf.get('data:default'));
+app.set('internal', nconf.get('data:internal'));
+app.set('local', nconf.get('data:local'));
+app.set('lifeAdapterLocal', nconf.get('data:lifeAdapterLocal'));
+app.set('lifeAdapter', nconf.get('data:lifeAdapter'));
 
-app.set('json', path.join(app.get('location'), 'json'));
+const data = (process.env.CV_GENERATOR_PROJECT_SERVER_DATA || 'default');
+app.set('data', data);
+const location = nconf.get('data:' + data);
+app.set('location', location);
+console.log('Data location: [%s:%s]', data, location);
+
+const fileBasedLocation = location.startsWith('http') ? app.get('internal') : location;
+app.set('fileBasedLocation', fileBasedLocation);
+console.log('Fallback data location: [%s]\n', fileBasedLocation);
 
 // load app icon
-var faviconPath = path.join(__dirname, app.get('location'), 'favicon.ico');
+var faviconPath = path.join(__dirname, fileBasedLocation, 'favicon.ico');
 if (fs.existsSync(faviconPath)) {
   app.use(favicon(faviconPath));
 }
@@ -57,7 +70,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, app.get('location')), { maxAge: '1w' }));
 
 app.use(cors());
 
@@ -75,13 +87,9 @@ app.get('*', function (req, res, next) {
     next() /* Continue to other routes if we're not redirecting */
 });
 
+app.use('/json', json);
 app.use('/', index);
-app.use('/cv', cv);
-app.use('/projects', projects);
-app.use('/gantt-chart', ganttChart);
-app.use('/general-timeline', generalTimeline);
-app.use('/entities', entities);
-app.use('/ui', ui);
+app.use(express.static(path.join(__dirname, location), { maxAge: '1w' }));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
