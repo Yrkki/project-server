@@ -81,10 +81,6 @@ function preprocessWhenNeeded(data, key) {
       data = JSON.parse(JSON.stringify(data).replaceAll('"0"', '""').replaceAll('"n/a"', '""'));
       break;
 
-    case '/cv.json':
-      data = JSON.parse(JSON.stringify(data).replaceAll('Certified', 'CERTIFIED'));
-      break;
-
     default:
       break;
   }
