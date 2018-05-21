@@ -20,7 +20,7 @@ function obfuscateWhenNeeded(currentPath, data) {
                     err ? reject(err) : resolve(exists)));
 
         return urlExistsPromise(authUrl).then(exists =>
-            exists ? data : obfuscate(JSON.parse(data)));
+            exists ? data : obfuscate(data));
     } else {
         const authPath = path.resolve(currentPath, a);
         // console.log('Checking path:', authPath);
