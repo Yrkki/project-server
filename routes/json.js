@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+const fs = require('fs');
 
 const obfuscator = require('../javascripts/obfuscator');
 const cacheControl = require('../javascripts/cacheControl');
@@ -11,24 +12,14 @@ const https = require('https');
 router.get(/.*/, function (req, res, next) {
   const routePath = '/json';
 
-  // console.log('Requesting:', req.url);
+  // console.log('json.js: Requesting:', req.url);
   allowCors(req, res);
   if (req.url.length > 1) {
-    const location = req.app.get('location');
-
-    const currentPath = location + routePath;
-    const url = currentPath + req.url;
-
-    if (location.startsWith('http')) {
-      fetch(url, req, currentPath, res);
-
+    const currentPath = req.app.get('location') + routePath;
+    if (currentPath.startsWith('http')) {
+      fetch(req, currentPath, res);
     } else {
-      const key = decodeURI(path.join('..', url));
-
-      // console.log('Getting:', key);
-      const data = require(key);
-
-      respond(data, req, currentPath, res);
+      load(req, currentPath, res);
     }
   } else {
     res.redirect('/');
@@ -37,8 +28,11 @@ router.get(/.*/, function (req, res, next) {
 
 module.exports = router;
 
-function fetch(url, req, currentPath, res) {
-  // console.log('Fetching:', url);
+function fetch(req, currentPath, res) {
+  // console.log('fetch', currentPath, req.url);
+
+  const url = decodeURI(currentPath + req.url);
+
   const protocol = currentPath.startsWith('https') ? https : http;
   protocol.get(url, (resp) => {
     let data = '';
@@ -48,14 +42,27 @@ function fetch(url, req, currentPath, res) {
     });
     resp.on('end', () => {
       // console.log("End.");
-      respond(data, req, currentPath, res);
+      respond(req, currentPath, res, data);
     });
   }).on("error", (err) => {
     // console.log("Error:", err.message);
   });
 }
 
-function respond(data, req, currentPath, res) {
+function load(req, currentPath, res) {
+  // console.log('load', currentPath, req.url);
+
+  const key = decodeURI(path.join(__dirname, '..', currentPath, req.url));
+
+  const data = fs.readFileSync(key);
+  respond(req, currentPath, res, data);
+}
+
+function respond(req, currentPath, res, data) {
+  // console.log('respond', req.url);
+
+  data = JSON.parse(data);
+
   data = preprocessWhenNeeded(data, req.url);
 
   obfuscator.obfuscateWhenNeeded(currentPath, data).then((data) => {
@@ -73,9 +80,9 @@ function preprocessWhenNeeded(data, key) {
 
   switch (key) {
     case '/ui.json':
-      try { data.Disclaimer.text = data.Disclaimer.text.join(' '); }
-      catch (e) { }
-      break;
+    try { data.Disclaimer.text = data.Disclaimer.text.join(' '); }
+    catch (e) { }
+    break;
 
     case '/projects.json':
       data = JSON.parse(JSON.stringify(data).replaceAll('"0"', '""').replaceAll('"n/a"', '""'));

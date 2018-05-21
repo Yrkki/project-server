@@ -10,8 +10,8 @@ var nconf = require('nconf');
 var fs = require('fs');
 var compression = require('compression');
 
-var index = require('./routes/index');
-var json = require('./routes/json');
+var indexRouter = require('./routes/index');
+var jsonRouter = require('./routes/json');
 
 var app = express();
 
@@ -87,9 +87,9 @@ app.get('*', function (req, res, next) {
     next() /* Continue to other routes if we're not redirecting */
 });
 
-app.use('/json', json);
-app.use('/', index);
-app.use(express.static(path.join(__dirname, location), { maxAge: '1w' }));
+app.use('/json', jsonRouter);
+app.use('/', indexRouter);
+// app.use(express.static(path.join(__dirname, location), { maxAge: '1w' }));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -8,24 +8,14 @@ const cacheControl = require('../javascripts/cacheControl');
 router.get(/.*/, function (req, res, next) {
   const routePath = '';
 
-  // console.log('Requesting:', req.url);
+  // console.log('index.js: Requesting:', req.url);
   allowCors(req, res);
   if (req.url.length > 1) {
-    const location = req.app.get('location');
-
-    const currentPath = location + routePath;
-    const url = currentPath + req.url;
-
+    const currentPath = req.app.get('location') + routePath;
     if (currentPath.startsWith('http')) {
-      fetch(url, req, currentPath, res);
-
+      fetch(req, currentPath, res);
     } else {
-      const key = decodeURI(path.join('..', url));
-
-      // console.log('Getting:', key);
-      const data = require(key);
-
-      respond(data, req, currentPath, res);
+      load(req, currentPath, res);
     }
   } else {
     res.render('index', { title: req.app.get('appName') });
@@ -34,14 +24,27 @@ router.get(/.*/, function (req, res, next) {
 
 module.exports = router;
 
-function fetch(url, req, currentPath, res) {
-  // console.log('Redirecting to:', url);
+function fetch(req, currentPath, res) {
+  // console.log('fetch', currentPath, req.url);
+
+  const url = decodeURI(currentPath + req.url);
+
   res.redirect(url);
 }
 
-function respond(data, req, currentPath, res) {
+function load(req, currentPath, res) {
+  // console.log('load', currentPath, req.url);
+
+  const key = decodeURI(path.join(__dirname, '..', currentPath, req.url));
+
+  respond(req, currentPath, res, key);
+}
+
+function respond(req, currentPath, res, key) {
+  // console.log('respond', key);
+
   cacheControl.setCacheControl(res);
-  res.send(data);
+  res.sendFile(key);
 }
 
 function allowCors(req, res) {
