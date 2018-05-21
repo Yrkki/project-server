@@ -11,7 +11,7 @@ function obfuscateWhenNeeded(currentPath, data) {
 
     const a = 'auth.json';
     if (currentPath.startsWith('http')) {
-        const authUrl = currentPath + a;
+        const authUrl = currentPath + '/' + a;
         // console.log('Checking url:', authUrl);
 
         const urlExistsPromise = url =>
