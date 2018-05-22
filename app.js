@@ -56,12 +56,8 @@ const location = nconf.get('data:' + data);
 app.set('location', location);
 console.log('Data location: [%s:%s]', data, location);
 
-const fileBasedLocation = location.startsWith('http') ? app.get('internal') : location;
-app.set('fileBasedLocation', fileBasedLocation);
-console.log('Fallback data location: [%s]\n', fileBasedLocation);
-
 // load app icon
-var faviconPath = path.join(__dirname, fileBasedLocation, 'favicon.ico');
+var faviconPath = path.join(__dirname, 'public/favicon', 'favicon.ico');
 if (fs.existsSync(faviconPath)) {
   app.use(favicon(faviconPath));
 }
