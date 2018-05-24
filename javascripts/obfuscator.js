@@ -55,11 +55,24 @@ function obfuscate(data) {
         return data;
 };
 
+loremizer = process.env.CV_GENERATOR_PROJECT_SERVER_LOREMIZER === 'loremiTranscriber'
+    ? loremiTranscriber
+    : loremiTranslator;
+
+function loremiTranslator(str, i) {
+    return i;
+}
+
+function loremiTranscriber(str, i) {
+    return str.charCodeAt(i) - 'a'.charCodeAt(0);
+}
+
 function obfuscateLine(str) {
     var outArray = [];
 
     for (var i = 0; i < str.length; i++) {
-        outArray.push(li[i % li.length]);
+        const index = loremizer(str, i);
+        outArray.push(li[index % li.length]);
     }
 
     return outArray.join('');
