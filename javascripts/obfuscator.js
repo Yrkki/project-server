@@ -57,22 +57,27 @@ function obfuscate(data) {
 
 loremizer = process.env.CV_GENERATOR_PROJECT_SERVER_LOREMIZER === 'loremiTranscriber'
     ? loremiTranscriber
-    : loremiTranslator;
+    : process.env.CV_GENERATOR_PROJECT_SERVER_LOREMIZER === 'loremiRepeater'
+        ? loremiRepeater
+        : loremiTranslator;
 
 function loremiTranslator(str, i) {
-    return i;
+    return li[i % li.length];
 }
 
 function loremiTranscriber(str, i) {
-    return str.charCodeAt(i) - 'a'.charCodeAt(0);
+    return li[(str.charCodeAt(i) - 'a'.charCodeAt(0)) % li.length];
+}
+
+function loremiRepeater(str, i) {
+    return str[i];
 }
 
 function obfuscateLine(str) {
     var outArray = [];
 
     for (var i = 0; i < str.length; i++) {
-        const index = loremizer(str, i);
-        outArray.push(li[index % li.length]);
+        outArray.push(loremizer(str, i));
     }
 
     return outArray.join('');
