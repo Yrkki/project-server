@@ -1,8 +1,6 @@
 const path = require('path');
-const http = require('http');
-const https = require('https');
 const urlExists = require('url-exists');
-var fs = require('fs');
+const fs = require('fs');
 
 const li = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ";
 
@@ -32,16 +30,24 @@ function obfuscateWhenNeeded(currentPath, data) {
 }
 
 function obfuscate(data) {
+    // adjust
     if (data === null)
         return '';
     else if (typeof data == 'number')
         return Math.round(data * (1 + (Math.random() * .2 - .1))); // 10% random scattring
     else if (/(^#[0-9A-F]{8}$)|(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(data))  // color
-        return data
+        return data;
+
+    // obfuscate per se
     else if (typeof data == 'string')
-        return obfuscateLine(data)
+        if (data === '')
+            return data;
+        else
+            return obfuscateLine(data);
+
+    // recurse
     else if (data instanceof Array)
-        return data.map(_ => obfuscate(_))
+        return data.map(_ => obfuscate(_));
     else if (typeof data == 'object') {
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
@@ -51,11 +57,14 @@ function obfuscate(data) {
         }
         return data;
     }
-    else
+
+    // skip
+    else {
         return data;
+    }
 };
 
-loremizer = process.env.CV_GENERATOR_PROJECT_SERVER_LOREMIZER === 'loremiTranscriber'
+const loremizer = process.env.CV_GENERATOR_PROJECT_SERVER_LOREMIZER === 'loremiTranscriber'
     ? loremiTranscriber
     : process.env.CV_GENERATOR_PROJECT_SERVER_LOREMIZER === 'loremiRepeater'
         ? loremiRepeater

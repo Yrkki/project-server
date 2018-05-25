@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 
+const encrypter = require('../javascripts/encrypter');
 const obfuscator = require('../javascripts/obfuscator');
 const cacheControl = require('../javascripts/cacheControl');
 
@@ -63,16 +64,24 @@ function respond(req, currentPath, res, data) {
 
   data = JSON.parse(data);
 
-  data = preprocessWhenNeeded(data, req.url);
+  if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'decrypt') {
+    data = encrypter.decrypt(data);
 
-  obfuscator.obfuscateWhenNeeded(currentPath, data).then((data) => {
+    data = preprocessWhenNeeded(data, req.url);
+
     const contentType = req.url.endsWith('.json') ? 'application/json' : data.ContentType;
     // console.log('contentType: ', contentType);
     res.setHeader('Content-Type', contentType);
 
     cacheControl.setCacheControl(res);
+    
+    obfuscator.obfuscateWhenNeeded(currentPath, data).then((data) => {
+      res.send(data);
+    });
+  } else {
+    data = encrypter.encrypt(data);
     res.send(data);
-  });
+  }
 }
 
 function preprocessWhenNeeded(data, key) {
@@ -80,9 +89,9 @@ function preprocessWhenNeeded(data, key) {
 
   switch (key) {
     case '/ui.json':
-    try { data.Disclaimer.text = data.Disclaimer.text.join(' '); }
-    catch (e) { }
-    break;
+      try { data.Disclaimer.text = data.Disclaimer.text.join(' '); }
+      catch (e) { }
+      break;
 
     case '/projects.json':
       data = JSON.parse(JSON.stringify(data).replaceAll('"0"', '""').replaceAll('"n/a"', '""'));
