@@ -62,7 +62,11 @@ function load(req, currentPath, res) {
 function respond(req, currentPath, res, data) {
   // console.log('respond', req.url);
 
-  data = JSON.parse(data);
+  try {
+    data = JSON.parse(data);
+  } catch (error) {
+    data = {};
+  }
 
   if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'decrypt') {
     data = encrypter.decrypt(data);
@@ -74,7 +78,7 @@ function respond(req, currentPath, res, data) {
     res.setHeader('Content-Type', contentType);
 
     cacheControl.setCacheControl(res);
-    
+
     obfuscator.obfuscateWhenNeeded(currentPath, data).then((data) => {
       res.send(data);
     });
