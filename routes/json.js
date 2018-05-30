@@ -99,6 +99,16 @@ function preprocessWhenNeeded(data, key) {
 
     case '/projects.json':
       data = JSON.parse(JSON.stringify(data).replaceAll('"0"', '""').replaceAll('"n/a"', '""'));
+
+      for (const iterator of data) {
+        iterator.Reference = iterator.Reference
+          .split(', ')
+          .map(reference => {
+            var ref = reference.indexOf(' ');
+            return ref > 0 ? reference.substr(0, reference.indexOf(' ')) : reference;
+          })
+          .join(', ');
+      }
       break;
 
     default:
