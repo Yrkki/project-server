@@ -33,7 +33,7 @@ nconf.defaults({
   "data": {
     "default": "public",
     "internal": "public",
-    "local": "../data/deploy/public",
+    "local": "../cv-generator-life-store/deploy/public",
     "lifeAdapterLocal": "http://localhost:2500",
     "lifeAdapter": "https://cv-generator-life-adapter.herokuapp.com"
   }
