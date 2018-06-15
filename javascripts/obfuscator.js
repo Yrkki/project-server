@@ -53,6 +53,8 @@ function obfuscate(data) {
             if (data.hasOwnProperty(key)) {
                 if (!['Id'].includes(key))
                     data[key] = obfuscate(data[key]);
+                else
+                    data[key].node = key;
             }
         }
         return data;
