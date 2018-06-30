@@ -18,6 +18,7 @@ function decryptLine(str) {
     try {
         deciphered += decipher.final(inputEncoding);
     } catch (error) {
+        // console.log('decryptLine:', error);
         deciphered = crypto.randomBytes(16).toString();
     }
     return deciphered;
