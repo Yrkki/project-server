@@ -4,19 +4,29 @@ const algorithm = 'aes256';
 const inputEncoding = 'utf8';
 const outputEncoding = 'latin1';
 const key = 'awct4uy4kwozvn7adh8y95evgsrtbyr';
+const bufferString = 'a2xhcgAAAAAAAAAA';
+const iv = new Buffer(bufferString,);
+const cryptkey = crypto.createHash('sha256').update(key).digest();
 
 function encryptLine(str) {
-    const cipher = crypto.createCipher(algorithm, key);
-    var ciphered = cipher.update(str, inputEncoding, outputEncoding);
-    ciphered += cipher.final(outputEncoding);
-    return ciphered;
+    const buf = new Buffer(str, inputEncoding);
+    const encipher = crypto.createCipheriv(algorithm, cryptkey, iv);
+    const enciphered = Buffer.concat([
+        encipher.update(buf),
+        encipher.final()
+    ]).toString(outputEncoding);
+    return enciphered;
 }
 
 function decryptLine(str) {
-    const decipher = crypto.createDecipher(algorithm, key);
-    var deciphered = decipher.update(str, outputEncoding, inputEncoding);
+    const buf = new Buffer(str, outputEncoding);
+    const decipher = crypto.createDecipheriv(algorithm, cryptkey, iv);
+    let deciphered;
     try {
-        deciphered += decipher.final(inputEncoding);
+        deciphered = Buffer.concat([
+            decipher.update(buf),
+            decipher.final()
+        ]).toString(inputEncoding);
     } catch (error) {
         // console.log('decryptLine:', error);
         deciphered = crypto.randomBytes(16).toString();
@@ -47,7 +57,9 @@ function process(data) {
     else if (typeof data == 'object') {
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
+                const dataKey = data[key];
                 data[key] = process(data[key]);
+                // console.log('process', dataKey, data[key]);
             }
         }
         return data;
