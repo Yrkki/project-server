@@ -11,10 +11,9 @@ const cryptkey = crypto.createHash('sha256').update(key).digest();
 function encryptLine(str) {
     const buf = Buffer.from(str, inputEncoding);
     const encipher = crypto.createCipheriv(algorithm, cryptkey, iv);
-    const enciphered = Buffer.concat([
-        encipher.update(buf, inputEncoding, outputEncoding),
-        encipher.final(outputEncoding)
-    ]).toString(outputEncoding);
+    const enciphered =
+        encipher.update(buf, inputEncoding, outputEncoding) +
+        encipher.final(outputEncoding);
     return enciphered;
 }
 
@@ -23,12 +22,11 @@ function decryptLine(str) {
     const decipher = crypto.createDecipheriv(algorithm, cryptkey, iv);
     let deciphered;
     try {
-        deciphered = Buffer.concat([
-            decipher.update(buf, outputEncoding, inputEncoding),
-            decipher.final(inputEncoding)
-        ]).toString(inputEncoding);
+        deciphered =
+            decipher.update(buf, outputEncoding, inputEncoding) +
+            decipher.final(inputEncoding);
     } catch (error) {
-        if (NodeJS.process.env.CV_GENERATOR_PROJECT_SERVER_DEBUG) {
+        if (Boolean(process.env.CV_GENERATOR_PROJECT_SERVER_DEBUG)) {
             console.log('Decrypt error:', error);
             deciphered = crypto.randomBytes(16).toString() + ' ' + error.message;
         } else {
@@ -42,28 +40,28 @@ var processor;
 
 function encrypt(data) {
     processor = encryptLine;
-    return process(data);
+    return doProcess(data);
 }
 
 function decrypt(data) {
     processor = decryptLine;
-    return process(data);
+    return doProcess(data);
 }
 
-function process(data) {
+function doProcess(data) {
     // decryptData per se
     if (typeof data == 'string' && data !== '')
         return processor(data);
 
     // recurse
     else if (data instanceof Array)
-        return data.map(_ => process(_));
+        return data.map(_ => doProcess(_));
     else if (typeof data == 'object') {
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
                 const dataKey = data[key];
-                data[key] = process(data[key]);
-                // console.log('process', dataKey, data[key]);
+                data[key] = doProcess(data[key]);
+                // console.log('doProcess', dataKey, data[key]);
             }
         }
         return data;
