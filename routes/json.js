@@ -70,22 +70,27 @@ function respond(req, currentPath, res, data) {
 
   if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'decrypt') {
     data = encrypter.decrypt(data);
-
-    data = preprocessWhenNeeded(data, req.url);
-
-    const contentType = req.url.endsWith('.json') ? 'application/json' : data.ContentType;
-    // console.log('contentType: ', contentType);
-    res.setHeader('Content-Type', contentType);
-
-    cacheControl.setCacheControl(res);
-
-    obfuscator.obfuscateWhenNeeded(currentPath, data).then((data) => {
-      res.send(data);
-    });
-  } else {
+    resSendData(req, currentPath, res, data);
+  } else if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'encrypt') {
     data = encrypter.encrypt(data);
     res.send(data);
+  } else {
+    resSendData(req, currentPath, res, data);
   }
+}
+
+function resSendData(req, currentPath, res, data) {
+  data = preprocessWhenNeeded(data, req.url);
+
+  const contentType = req.url.endsWith('.json') ? 'application/json' : data.ContentType;
+  // console.log('contentType: ', contentType);
+  res.setHeader('Content-Type', contentType);
+
+  cacheControl.setCacheControl(res);
+
+  obfuscator.obfuscateWhenNeeded(currentPath, data).then((data) => {
+    res.send(data);
+  });
 }
 
 function preprocessWhenNeeded(data, key) {
