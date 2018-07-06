@@ -29,7 +29,7 @@ function decryptLine(str) {
         ]).toString(inputEncoding);
     } catch (error) {
         console.log('decryptLine:', error);
-        deciphered = crypto.randomBytes(16).toString();
+        deciphered = crypto.randomBytes(16).toString() + ' ' + error.message;
     }
     return deciphered;
 }
