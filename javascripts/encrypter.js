@@ -5,15 +5,15 @@ const inputEncoding = 'utf8';
 const outputEncoding = 'latin1';
 const key = 'awct4uy4kwozvn7adh8y95evgsrtbyr';
 const bufferString = 'a2xhcgAAAAAAAAAA';
-const iv = new Buffer(bufferString,);
+const iv = new Buffer(bufferString, );
 const cryptkey = crypto.createHash('sha256').update(key).digest();
 
 function encryptLine(str) {
     const buf = new Buffer(str, inputEncoding);
     const encipher = crypto.createCipheriv(algorithm, cryptkey, iv);
     const enciphered = Buffer.concat([
-        encipher.update(buf),
-        encipher.final()
+        encipher.update(buf, inputEncoding, outputEncoding),
+        encipher.final(outputEncoding)
     ]).toString(outputEncoding);
     return enciphered;
 }
@@ -24,12 +24,16 @@ function decryptLine(str) {
     let deciphered;
     try {
         deciphered = Buffer.concat([
-            decipher.update(buf),
-            decipher.final()
+            decipher.update(buf, outputEncoding, inputEncoding),
+            decipher.final(inputEncoding)
         ]).toString(inputEncoding);
     } catch (error) {
-        console.log('decryptLine:', error);
-        deciphered = crypto.randomBytes(16).toString() + ' ' + error.message;
+        if (NodeJS.process.env.CV_GENERATOR_PROJECT_SERVER_DEBUG) {
+            console.log('Decrypt error:', error);
+            deciphered = error.message;
+        } else {
+            deciphered = '';
+        }
     }
     return deciphered;
 }
