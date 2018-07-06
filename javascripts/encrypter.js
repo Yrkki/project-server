@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const algorithm = 'aes256';
 const inputEncoding = 'utf8';
-const outputEncoding = 'latin1';
+const outputEncoding = 'base64';
 const key = 'awct4uy4kwozvn7adh8y95evgsrtbyr';
 const bufferString = 'a2xhcgAAAAAAAAAA';
 const iv = Buffer.from(bufferString, inputEncoding);
@@ -27,7 +27,7 @@ function decryptLine(str) {
             decipher.final(inputEncoding);
     } catch (error) {
         if (Boolean(process.env.CV_GENERATOR_PROJECT_SERVER_DEBUG)) {
-            console.log('Decrypt error:', error);
+            console.log('Decrypt error:', str, error);
             deciphered = crypto.randomBytes(16).toString() + ' ' + error.message;
         } else {
             deciphered = '';
