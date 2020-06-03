@@ -27,8 +27,8 @@
     "nconf": "^0.10.0",
     "pug": "3.0.0",
     "serve-favicon": "~2.5.0",
-    "url-exists": "^1.0.3",
-    "snyk": "^1.335.0"
+    "snyk": "^1.335.0",
+    "url-exists": "^1.0.3"
   },
   "engines": {
     "node": "14.3.0"
