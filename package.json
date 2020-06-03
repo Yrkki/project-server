@@ -1,25 +1,33 @@
 {
   "name": "project-server",
-  "version": "0.0.0",
-  "engines": {
-    "node": "8.10.0"
-  },
+  "version": "1.1.0",
+  "description": "CV Generator Project Server",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
+  "keywords": [
+    "CV Generator",
+    "ProjectServer"
+  ],
+  "author": "jorich",
+  "license": "MIT",
   "dependencies": {
-    "body-parser": "~1.18.2",
-    "compression": "^1.7.2",
-    "cookie-parser": "~1.4.3",
-    "cors": "^2.8.4",
-    "debug": "~2.6.9",
-    "express": "~4.15.5",
-    "morgan": "~1.9.0",
-    "ms": "^2.1.1",
+    "body-parser": "~1.19.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "~1.4.5",
+    "cors": "^2.8.5",
+    "debug": "~4.1.1",
+    "express": "~4.17.1",
+    "morgan": "~1.10.0",
+    "ms": "^2.1.2",
     "nconf": "^0.10.0",
-    "pug": "2.0.0-beta11",
-    "serve-favicon": "~2.4.5",
+    "pug": "3.0.0",
+    "serve-favicon": "~2.5.0",
     "url-exists": "^1.0.3"
+  },
+  "engines": {
+    "node": "14.3.0"
   }
 }
