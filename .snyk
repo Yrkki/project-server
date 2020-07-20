@@ -9,6 +9,8 @@ patch:
   SNYK-JS-LODASH-567746:
     - pug > pug-code-gen > constantinople > @babel/types > lodash:
         patched: '2020-06-03T15:19:19.706Z'
+      pug > pug-code-gen > with > babel-walk > @babel/types > lodash:
+        patched: '2020-07-20T11:48:52.262Z'
     - pug > pug-filters > constantinople > @babel/types > lodash:
         patched: '2020-06-03T15:19:19.706Z'
     - pug > pug-code-gen > with > @babel/types > lodash:
