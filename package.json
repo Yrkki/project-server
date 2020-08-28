@@ -7,7 +7,9 @@
     "start": "node ./bin/www",
     "test": "snyk test",
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "prepare": "npm run snyk-protect",
+    "dev:plan:update:report:action:update-packages": "npm-run-all update-packages:*",
+    "update-packages:npx-npm-check-updates-u": "npx npm-check-updates -u --packageFile package.json && npm install"
   },
   "keywords": [
     "CV Generator",
@@ -27,11 +29,11 @@
     "nconf": "^0.10.0",
     "pug": "^3.0.0",
     "serve-favicon": "~2.5.0",
-    "snyk": "^1.363.0",
+    "snyk": "^1.385.2",
     "url-exists": "^1.0.3"
   },
   "engines": {
-    "node": "14.3.0"
+    "node": "14.8.0"
   },
   "snyk": true
 }
