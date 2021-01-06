@@ -5,12 +5,12 @@ const fs = require('fs');
 const li = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ";
 
 function obfuscateWhenNeeded(currentPath, data) {
-    // console.log('Obfuscating...');
+    console.debug('obfuscator.js: Obfuscating...');
 
     const a = 'auth.json';
     if (currentPath.startsWith('http')) {
         const authUrl = currentPath + '/' + a;
-        // console.log('Checking url:', authUrl);
+        console.debug('obfuscator.js: Checking url:', authUrl);
 
         const urlExistsPromise = url =>
             new Promise((resolve, reject) =>
@@ -21,7 +21,7 @@ function obfuscateWhenNeeded(currentPath, data) {
             exists ? data : obfuscate(data));
     } else {
         const authPath = path.resolve(currentPath, a);
-        // console.log('Checking path:', authPath);
+        console.debug('obfuscator.js: Checking path:', authPath);
         if (!fs.existsSync(authPath)) {
             data = obfuscate(data);
         }
@@ -30,6 +30,9 @@ function obfuscateWhenNeeded(currentPath, data) {
 }
 
 function obfuscate(data) {
+    console.debug('obfuscator.js: Debug: obfuscate:', 'clean.');
+    return data;
+
     // adjust
     if (data === null)
         return '';

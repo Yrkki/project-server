@@ -43,6 +43,10 @@ nconf.defaults({
 // compress responses
 app.use(compression());
 
+// override console log
+var overrideConsoleLog = require('./override-console-log');
+overrideConsoleLog();
+
 app.set('appName', 'Project Server');
 
 app.set('default', nconf.get('data:default'));
@@ -55,7 +59,7 @@ const data = (process.env.CV_GENERATOR_PROJECT_SERVER_DATA || 'default');
 app.set('data', data);
 const location = nconf.get('data:' + data);
 app.set('location', location);
-console.log('Data location: [%s:%s]', data, location);
+console.debug('app.js: Data location: [%s:%s]', data, location);
 
 // load app icon
 var faviconPath = path.join(__dirname, 'public/favicon', 'favicon.ico');

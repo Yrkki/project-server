@@ -26,12 +26,8 @@ function decryptLine(str) {
             decipher.update(buf, outputEncoding, inputEncoding) +
             decipher.final(inputEncoding);
     } catch (error) {
-        if (Boolean(process.env.CV_GENERATOR_PROJECT_SERVER_DEBUG)) {
-            console.log('Decrypt error:', str, error);
-            deciphered = crypto.randomBytes(16).toString() + ' ' + error.message;
-        } else {
-            deciphered = '';
-        }
+        console.debug('encrypter.js: Decrypt error:', str, error);
+        deciphered = crypto.randomBytes(16).toString() + ' ' + error.message;
     }
     return deciphered;
 }
@@ -61,7 +57,7 @@ function doProcess(data) {
             if (data.hasOwnProperty(key)) {
                 const dataKey = data[key];
                 data[key] = doProcess(data[key]);
-                // console.log('doProcess', dataKey, data[key]);
+                console.debug('encrypter.js: doProcess', dataKey, data[key]);
             }
         }
         return data;

@@ -13,7 +13,7 @@ const https = require('https');
 router.get(/.*/, function (req, res, next) {
   const routePath = '/json';
 
-  // console.log('json.js: Requesting:', req.url);
+  console.debug('json.js: Requesting:', req.url);
   allowCors(req, res);
   if (req.url.length > 1) {
     const currentPath = req.app.get('location') + routePath;
@@ -30,28 +30,34 @@ router.get(/.*/, function (req, res, next) {
 module.exports = router;
 
 function fetch(req, currentPath, res) {
-  // console.log('fetch', currentPath, req.url);
+  console.debug('json.js: fetch', currentPath, req.url);
 
   const url = decodeURI(currentPath + req.url);
 
   const protocol = currentPath.startsWith('https') ? https : http;
   protocol.get(url, (resp) => {
-    let data = '';
-    resp.on('data', (chunk) => {
-      // console.log("Data:", chunk.length);
-      data += chunk;
-    });
-    resp.on('end', () => {
-      // console.log("End.");
-      respond(req, currentPath, res, data);
-    });
-  }).on("error", (err) => {
-    // console.log("Error:", err.message);
+    console.info(`json.js: fetch: resp.statusCode: ${resp.statusCode}`);
+    if (resp.statusCode >= 300 && resp.statusCode < 400) {
+      // respond(req, currentPath, res, 'There was a redirect.');
+      res.redirect(resp.headers.location);
+    } else {
+      let data = '';
+      resp.on('data', (chunk) => {
+        console.debug("json.js: Data: chunk length:", chunk.length);
+        data += chunk;
+      });
+      resp.on('end', () => {
+        console.debug("json.js: End.");
+        respond(req, currentPath, res, data);
+      });
+    }
+  }).on("error", (error) => {
+    console.error(`json.js: ${error.message}`);
   });
 }
 
 function load(req, currentPath, res) {
-  // console.log('load', currentPath, req.url);
+  console.debug('json.js: load', currentPath, req.url);
 
   const key = decodeURI(path.join(__dirname, '..', currentPath, req.url));
 
@@ -60,14 +66,28 @@ function load(req, currentPath, res) {
 }
 
 function respond(req, currentPath, res, data) {
-  // console.log('respond', req.url);
+  console.debug('json.js: respond', req.url);
 
   try {
+    // prep amd json package text data like e.g. redirect info message
+    if (typeof data === 'string') {
+      if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'decrypt') {
+        data = encrypter.encrypt(data);
+      } else if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'encrypt') {
+        data = encrypter.decrypt(data);
+      } else {
+      }
+      data = JSON.stringify({ data: data });
+    }
+
+    // parse json data
     data = JSON.parse(data);
   } catch (error) {
+    console.error(`json.js: respond: message: ${error.message}, data: ${data}`);
     data = {};
   }
 
+  // interpret message and send response
   if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'decrypt') {
     data = encrypter.decrypt(data);
     resSendData(req, currentPath, res, data);
@@ -83,7 +103,7 @@ function resSendData(req, currentPath, res, data) {
   data = preprocessWhenNeeded(data, req.url);
 
   const contentType = req.url.endsWith('.json') ? 'application/json' : data.ContentType;
-  // console.log('contentType: ', contentType);
+  console.debug('json.js: contentType: ', contentType);
   res.setHeader('Content-Type', contentType);
 
   cacheControl.setCacheControl(res);
@@ -94,17 +114,24 @@ function resSendData(req, currentPath, res, data) {
 }
 
 function preprocessWhenNeeded(data, key) {
-  // console.log('Preprocessing:', key);
+  console.debug('json.js: Preprocessing:', key);
 
   switch (key) {
     case '/ui.json':
-      try { data.Disclaimer.text = data.Disclaimer.text.join(' '); }
+      try {
+        // format multiline text data
+        data.Disclaimer.text = data.Disclaimer.text.join(' ');
+      }
       catch (e) { }
       break;
 
     case '/projects.json':
+      // clean up falsy data
       data = JSON.parse(JSON.stringify(data).replaceAll('"0"', '""').replaceAll('"n/a"', '""'));
 
+      console.debug(`json.js: preprocessWhenNeeded: data: ${JSON.stringify(data)}`);
+
+      // prep special data
       for (const iterator of data) {
         iterator.Reference = iterator.Reference
           .split(', ')

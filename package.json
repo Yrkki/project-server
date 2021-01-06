@@ -1,6 +1,6 @@
 {
   "name": "project-server",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "CV Generator Project Server",
   "private": true,
   "scripts": {
@@ -10,7 +10,6 @@
     "prepare": "npm run snyk-protect",
     "dev:plan:update:report:action:update-packages": "npm-run-all update-packages:*",
     "update-packages:install": "npm install",
-    "update-packages:ng-update": "ng update",
     "update-packages:npx-npm-check-updates-u": "npx npm-check-updates -u --packageFile package.json && npm install"
   },
   "keywords": [
@@ -27,11 +26,11 @@
     "debug": "~4.3.1",
     "express": "~4.17.1",
     "morgan": "~1.10.0",
-    "ms": "^2.1.2",
+    "ms": "^2.1.3",
     "nconf": "^0.11.0",
     "pug": "^3.0.0",
     "serve-favicon": "~2.5.0",
-    "snyk": "^1.433.0",
+    "snyk": "^1.437.3",
     "url-exists": "^1.0.3"
   },
   "engines": {
