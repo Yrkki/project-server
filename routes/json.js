@@ -70,7 +70,7 @@ function respond(req, currentPath, res, data) {
 
   try {
     // prep amd json package text data like e.g. redirect info message
-    if (!(data.startsWith('{') || data.startsWith('['))) {
+    if (res.statusCode >= 300 && res.statusCode < 400) {
       if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'decrypt') {
         data = encrypter.encrypt(data);
       } else if (process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER === 'encrypt') {
