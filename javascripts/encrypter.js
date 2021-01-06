@@ -26,7 +26,7 @@ function decryptLine(str) {
             decipher.update(buf, outputEncoding, inputEncoding) +
             decipher.final(inputEncoding);
     } catch (error) {
-        console.debug('encrypter.js: Decrypt error:', str, error);
+        console.error('encrypter.js: decryptLine: Decrypt error:', str, error);
         deciphered = crypto.randomBytes(16).toString() + ' ' + error.message;
     }
     return deciphered;
@@ -57,7 +57,7 @@ function doProcess(data) {
             if (data.hasOwnProperty(key)) {
                 const dataKey = data[key];
                 data[key] = doProcess(data[key]);
-                console.debug('encrypter.js: doProcess', dataKey, data[key]);
+                // console.debug('encrypter.js: doProcess: ', dataKey, data[key]);
             }
         }
         return data;

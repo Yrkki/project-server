@@ -8,7 +8,7 @@ const cacheControl = require('../javascripts/cacheControl');
 router.get(/.*/, function (req, res, next) {
   const routePath = '';
 
-  console.debug('index.js: Requesting:', req.url);
+  console.debug('index.js: router.get: Requesting:', req.url);
   allowCors(req, res);
   if (req.url.length > 1) {
     const currentPath = req.app.get('location') + routePath;
@@ -25,7 +25,7 @@ router.get(/.*/, function (req, res, next) {
 module.exports = router;
 
 function fetch(req, currentPath, res) {
-  console.debug('index.js: fetch', currentPath, req.url);
+  console.debug('index.js: fetch: ', currentPath, req.url);
 
   const url = decodeURI(currentPath + req.url);
 
@@ -33,7 +33,7 @@ function fetch(req, currentPath, res) {
 }
 
 function load(req, currentPath, res) {
-  console.debug('index.js: load', currentPath, req.url);
+  console.debug('index.js: load: ', currentPath, req.url);
 
   const key = decodeURI(path.join(__dirname, '..', currentPath, req.url));
 
@@ -41,7 +41,7 @@ function load(req, currentPath, res) {
 }
 
 function respond(req, currentPath, res, key) {
-  console.debug('index.js: respond', key);
+  console.debug('index.js: respond: ', key);
 
   cacheControl.setCacheControl(res);
   res.sendFile(key);

@@ -13,7 +13,7 @@ const https = require('https');
 router.get(/.*/, function (req, res, next) {
   const routePath = '/json';
 
-  console.debug('json.js: Requesting:', req.url);
+  console.debug('json.js: router.get: Requesting:', req.url);
   allowCors(req, res);
   if (req.url.length > 1) {
     const currentPath = req.app.get('location') + routePath;
@@ -30,7 +30,7 @@ router.get(/.*/, function (req, res, next) {
 module.exports = router;
 
 function fetch(req, currentPath, res) {
-  console.debug('json.js: fetch', currentPath, req.url);
+  console.debug('json.js: fetch: ', currentPath, req.url);
 
   const url = decodeURI(currentPath + req.url);
 
@@ -57,7 +57,7 @@ function fetch(req, currentPath, res) {
 }
 
 function load(req, currentPath, res) {
-  console.debug('json.js: load', currentPath, req.url);
+  console.debug('json.js: load: ', currentPath, req.url);
 
   const key = decodeURI(path.join(__dirname, '..', currentPath, req.url));
 
@@ -66,7 +66,7 @@ function load(req, currentPath, res) {
 }
 
 function respond(req, currentPath, res, data) {
-  console.debug('json.js: respond', req.url);
+  console.debug('json.js: respond: ', req.url);
 
   try {
     // prep amd json package text data like e.g. redirect info message
@@ -103,7 +103,7 @@ function resSendData(req, currentPath, res, data) {
   data = preprocessWhenNeeded(data, req.url);
 
   const contentType = req.url.endsWith('.json') ? 'application/json' : data.ContentType;
-  console.debug('json.js: contentType: ', contentType);
+  console.debug('json.js: resSendData: contentType: ', contentType);
   res.setHeader('Content-Type', contentType);
 
   cacheControl.setCacheControl(res);
@@ -114,7 +114,7 @@ function resSendData(req, currentPath, res, data) {
 }
 
 function preprocessWhenNeeded(data, key) {
-  console.debug('json.js: Preprocessing:', key);
+  console.debug('json.js: preprocessWhenNeeded: Preprocessing:', key);
 
   switch (key) {
     case '/ui.json':
@@ -122,24 +122,31 @@ function preprocessWhenNeeded(data, key) {
         // format multiline text data
         data.Disclaimer.text = data.Disclaimer.text.join(' ');
       }
-      catch (e) { }
+      catch (e) {
+        console.error(`json.js: preprocessWhenNeeded: Gave up formatting multiline text data`);
+      }
       break;
 
     case '/projects.json':
       // clean up falsy data
       data = JSON.parse(JSON.stringify(data).replaceAll('"0"', '""').replaceAll('"n/a"', '""'));
 
-      console.debug(`json.js: preprocessWhenNeeded: data: ${JSON.stringify(data)}`);
+      // console.debug(`json.js: preprocessWhenNeeded: data: ${JSON.stringify(data)}`);
 
-      // prep special data
-      for (const iterator of data) {
-        iterator.Reference = iterator.Reference
-          .split(', ')
-          .map(reference => {
-            var ref = reference.indexOf(' ');
-            return ref > 0 ? reference.substr(0, reference.indexOf(' ')) : reference;
-          })
-          .join(', ');
+      try {
+        // prep special data
+        for (const iterator of data) {
+          iterator.Reference = iterator.Reference
+            .split(', ')
+            .map(reference => {
+              var ref = reference.indexOf(' ');
+              return ref > 0 ? reference.substr(0, reference.indexOf(' ')) : reference;
+            })
+            .join(', ');
+        }
+      }
+      catch (e) {
+        console.error(`json.js: preprocessWhenNeeded: Gave up preparing special data`);
       }
       break;
 
