@@ -2,23 +2,26 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
+const mime = require('mime-types')
 
 const encrypter = require('../javascripts/encrypter');
 const obfuscator = require('../javascripts/obfuscator');
-const cacheControl = require('../javascripts/cacheControl');
 
+const cacheControl = require('../javascripts/cacheControl');
+const errorHandler = require('../errorHandler');
 const http = require('http');
 const https = require('https');
 
+// serve GET request
 router.get(/.*/, function (req, res, next) {
   const routePath = '/json';
 
-  console.debug('json.js: router.get: Requesting:', req.url);
+  console.debug(`json.js: router.get: Requesting: req.url: {$req.url}`);
   allowCors(req, res);
   if (req.url.length > 1) {
     const currentPath = req.app.get('location') + routePath;
     if (currentPath.startsWith('http')) {
-      fetch(req, currentPath, res);
+      fetch(req, currentPath, res, next);
     } else {
       load(req, currentPath, res);
     }
@@ -27,46 +30,80 @@ router.get(/.*/, function (req, res, next) {
   }
 });
 
-module.exports = router;
+/**
+ * Fetch via http(s).
+ */
 
-function fetch(req, currentPath, res) {
-  console.debug('json.js: fetch: ', currentPath, req.url);
+function fetch(req, currentPath, res, next) {
+  console.debug(`json.js: fetch: currentPath: ${currentPath}, req.url: ${req.url}`);
 
-  const url = decodeURI(currentPath + req.url);
+  const url = currentPath + req.url;
+  follow(url, req, currentPath, res, next);
+};
 
-  const protocol = currentPath.startsWith('https') ? https : http;
+/**
+ * Follow using the proper protocol.
+ */
+
+function follow(url, req, currentPath, res, next) {
+  const protocol = url.startsWith('https') ? https : http;
+  console.debug(`json.js: follow: https: ${protocol == https}, url: ${url}`);
   protocol.get(url, (resp) => {
-    console.info(`json.js: fetch: resp.statusCode: ${resp.statusCode}`);
+    console.debug(`json.js: follow: resp.statusCode: ${resp.statusCode}`);
     if (resp.statusCode >= 300 && resp.statusCode < 400) {
-      // respond(req, currentPath, res, 'There was a redirect.');
-      res.redirect(resp.headers.location);
-    } else {
+
+      console.debug(`json.js: follow: redirected: resp.headers.location: ${resp.headers.location}`);
+      follow(resp.headers.location, req, currentPath, res, next);
+
       let data = '';
       resp.on('data', (chunk) => {
-        console.debug("json.js: Data: chunk length:", chunk.length);
+        console.debug(`json.js: follow: redirected: Data:
+          chunk.length: ${chunk.length},
+          chunk: ${chunk.toString()}`);
         data += chunk;
       });
       resp.on('end', () => {
-        console.debug("json.js: End.");
+        console.debug(`json.js: follow: End:
+          data: ${data}`);
+      });
+    } else {
+      let data = '';
+      resp.on('data', (chunk) => {
+        console.debug(`json.js: follow: Data: chunk length: ${chunk.length}`);
+        data += chunk;
+      });
+      resp.on('end', () => {
+        console.debug(`json.js: follow: End.`);
         respond(req, currentPath, res, data);
       });
     }
   }).on("error", (error) => {
-    console.error(`json.js: ${error.message}`);
+    errorHandler(error, `json.js: follow`);
+
+    // next();
   });
-}
+  console.log();
+};
+
+/**
+ * Load from file system.
+ */
 
 function load(req, currentPath, res) {
-  console.debug('json.js: load: ', currentPath, req.url);
+  console.debug(`json.js: load: currentPath: ${currentPath}, req.url: ${req.url}`);
 
   const key = decodeURI(path.join(__dirname, '..', currentPath, req.url));
 
   const data = fs.readFileSync(key);
   respond(req, currentPath, res, data);
-}
+};
+
+/**
+ * Respond.
+ */
 
 function respond(req, currentPath, res, data) {
-  console.debug('json.js: respond: ', req.url);
+  console.debug(`json.js: respond: currentPath: ${currentPath}, req.url: ${req.url}`);
 
   try {
     // prep amd json package text data like e.g. redirect info message
@@ -83,7 +120,8 @@ function respond(req, currentPath, res, data) {
     // parse json data
     data = JSON.parse(data);
   } catch (error) {
-    console.error(`json.js: respond: message: ${error.message}, data: ${data}`);
+    errorHandler(error, `json.js: respond`);
+    console.debug(`data: ${data}`);
     data = {};
   }
 
@@ -97,24 +135,30 @@ function respond(req, currentPath, res, data) {
   } else {
     resSendData(req, currentPath, res, data);
   }
-}
+};
+
+/**
+ * Respond by processing and sending the data.
+ */
 
 function resSendData(req, currentPath, res, data) {
   data = preprocessWhenNeeded(data, req.url);
 
-  const contentType = req.url.endsWith('.json') ? 'application/json' : data.ContentType;
-  console.debug('json.js: resSendData: contentType: ', contentType);
-  res.setHeader('Content-Type', contentType);
+  res = adjustContentType(req, res);
 
   cacheControl.setCacheControl(res);
 
   obfuscator.obfuscateWhenNeeded(currentPath, data).then((data) => {
     res.send(data);
   });
-}
+};
+
+/**
+ * Preprocess when needed adapting the data to the client expectations.
+ */
 
 function preprocessWhenNeeded(data, key) {
-  console.debug('json.js: preprocessWhenNeeded: Preprocessing:', key);
+  console.debug(`json.js: preprocessWhenNeeded: Preprocessing: key: ${key}`);
 
   switch (key) {
     case '/ui.json':
@@ -123,7 +167,8 @@ function preprocessWhenNeeded(data, key) {
         data.Disclaimer.text = data.Disclaimer.text.join(' ');
       }
       catch (e) {
-        console.error(`json.js: preprocessWhenNeeded: Gave up formatting multiline text data`);
+        errorHandler(error, `json.js: preprocessWhenNeeded`);
+        console.debug(`Gave up formatting multiline text data`);
       }
       break;
 
@@ -146,7 +191,8 @@ function preprocessWhenNeeded(data, key) {
         }
       }
       catch (e) {
-        console.error(`json.js: preprocessWhenNeeded: Gave up preparing special data`);
+        errorHandler(error, `json.js: preprocessWhenNeeded`);
+        console.debug(`Gave up preparing special data`);
       }
       break;
 
@@ -155,14 +201,34 @@ function preprocessWhenNeeded(data, key) {
   }
 
   return data;
-}
+};
+
+/**
+ * Adjust content type.
+ */
+
+function adjustContentType(req, res) {
+  const contentType = mime.contentType(path.parse(req.url).ext);
+  if (contentType) {
+    console.debug(`json.js: adjustContentType: req.url: ${req.url}, contentType: ${contentType}`);
+    res.setHeader('Content-Type', contentType);
+  }
+
+  return res;
+};
 
 String.prototype.replaceAll = function (search, replacement) {
   const target = this;
   return target.replace(new RegExp(search, 'g'), replacement);
 };
 
+/**
+ * Allow CORS.
+ */
+
 function allowCors(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
-}
+};
+
+module.exports = router;

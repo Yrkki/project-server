@@ -1,4 +1,7 @@
 {
+    "appName": "Project Server",
+    "appPackageName": "project-server",
+    "debug": "false",
     "http": {
         "port": 3000,
         "hosts": [
@@ -10,8 +13,13 @@
     "data": {
         "default": "public",
         "internal": "public",
-        "local": "../cv-generator-life-store/deploy/public",
+        "local": "../<cv-generator-life-store>/deploy/public",
         "lifeAdapterLocal": "http://localhost:2500",
-        "lifeAdapter": "https://cv-generator-life-adapter.herokuapp.com"
-    }
+        "lifeAdapter": "https://<cv-generator-life-adapter>.herokuapp.com"
+    },
+    "dataSelector": "default",
+    "encrypter": "",
+    "loremizer": "loremiRepeater",
+    "skipRedirectToHttps": true,
+    "useSpdy": false
 }
