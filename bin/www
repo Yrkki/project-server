@@ -12,4 +12,4 @@ var port = listener.normalizePort(process.env.PORT || nconf.get('http:port'));
 app.set('port', port);
 
 // Start the app by listening on the default port provided, on all network interfaces.
-listener.listen(app, port, undefined, undefined, { useSpdy: (app.get('useSpdy') === 'true'), useHttp: false });
+listener.listen(app, port, undefined, undefined, { useSpdy: app.get('useSpdy') === 'true', useHttp: false });

@@ -56,9 +56,9 @@ nconf.defaults({
 // compress responses
 app.use(compression());
 
-/* To snake upper case. */
-function toSnakeUpperCase(str) {
-  return str.replace(/[A-Z]/g, _ => `_${_.toUpperCase()}`);
+/* To snake case. */
+function toSnakeCase(str) {
+  return str.replace(/[A-Z]/g, _ => `_${_}`);
 };
 
 /* Map environment to configuration. */
@@ -93,7 +93,7 @@ const dataLifeAdapter = mapEnv2Config('Data lifeAdapter', process.env.CV_GENERAT
 
 const data = mapEnv2Config('Data', process.env.CV_GENERATOR_PROJECT_SERVER_DATA,
   'dataSelector', 'default');
-const location = mapEnv2Config('Location', process.env['CV_GENERATOR_PROJECT_SERVER_DATA_' + toSnakeUpperCase(data)],
+const location = mapEnv2Config('Location', process.env['CV_GENERATOR_PROJECT_SERVER_DATA_' + toSnakeCase(data).toUpperCase()],
   'data:' + data, 'https://<distribution>.cloudfront.net/deploy/public', 'location');
 
 const encrypter = mapEnv2Config('Encrypter', process.env.CV_GENERATOR_PROJECT_SERVER_ENCRYPTER,

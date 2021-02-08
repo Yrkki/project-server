@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "snyk test",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "if [ \"$(date +%H%M)\" -gt 2100 -a \"$(date +%H%M)\" -lt 2200 ]; then npx snyk protect ; else echo Skipping Snyk protect. ; fi",
     "prepare": "npm run snyk-protect",
     "dev:plan:update:report:action:update-packages": "npm-run-all update-packages:*",
     "update-packages:install": "npm install --legacy-peer-deps",
