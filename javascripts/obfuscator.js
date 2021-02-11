@@ -30,14 +30,11 @@ function obfuscateWhenNeeded(currentPath, data) {
 }
 
 function obfuscate(data) {
-    console.debug('obfuscator.js: obfuscate:', 'clean.');
-    return data;
-
     // adjust
     if (data === null)
         return '';
     else if (typeof data == 'number')
-        return Math.round(data * (1 + (Math.random() * .2 - .1))); // 10% random scattring
+        return Math.round(data * (1 + (Math.random() * .2 - .1))); // 10% random scattering
     else if (/(^#[0-9A-F]{8}$)|(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(data))  // color
         return data;
 

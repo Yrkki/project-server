@@ -88,7 +88,7 @@ function follow(url, req, currentPath, res, next) {
 function load(req, currentPath, res) {
   console.debug(`index.js: load: currentPath: ${currentPath}, req.url: ${req.url}`);
 
-  const key = decodeURI(path.join(__dirname, '..', currentPath, req.url));
+  const key = decodeURI(path.join(__dirname, currentPath, req.url));
 
   respond(req, currentPath, res, key);
 };
