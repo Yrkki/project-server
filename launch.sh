@@ -12,7 +12,7 @@ ls -aF --color=always
 echo
 
 . ./env.sh
-node ./bin/www &
+nodemon ./bin/www &
 
 echo
 echo $'\033[1;32m'Server launched.$'\033[0m'
