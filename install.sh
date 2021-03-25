@@ -11,32 +11,39 @@ pwd
 ls -aF --color=always
 echo
 
-app=cv-generator-project-server
+apps=(cv-generator-project-server cv-generator-project-server-eu)
+services=(cv-generator-life-adapter cv-generator-life-adapter-eu)
 
 report() {
   heroku config -a $app
   # heroku run env -a $app
 }
 
-report
-echo
+for i in "${!apps[@]}"; do
+  app=${apps[$i]}
+  service=${services[$i]}
+  echo $'\033[1;30m'Connecting the $'\033[1;35m'"$app"$'\033[1;30m' app to the $'\033[0;35m'"$service"$'\033[1;30m' service...$'\033[0m'
 
-maintenanceIsOff=$(heroku maintenance -a $app)
+  report
+  echo
 
-if [ $maintenanceIsOff == "off" ]; then
-  heroku maintenance:on -a $app
-fi
+  maintenanceIsOff=$(heroku maintenance -a $app)
 
-cat ./env.sh | sed "s/export /heroku config:set -a $app /g" > env-remote.sh
-. ./env-remote.sh
+  if [ $maintenanceIsOff == "off" ]; then
+    heroku maintenance:on -a $app
+  fi
 
-if [ $maintenanceIsOff == "off" ]; then
-  heroku maintenance:off -a $app
-fi
+  sed "s/""${services[0]}""/""$service""/g" <./env.sh >env-tmp-"$app".sh
+  sed "s/export /heroku config:set -a ""$app"" /g" <./env-tmp-"$app".sh >env-remote-"$app".sh
+  . ./env-remote-"$app".sh
 
-report
-echo
+  if [ $maintenanceIsOff == "off" ]; then
+    heroku maintenance:off -a $app
+  fi
 
+  report
+  echo
+done
 
 echo
 echo $'\033[1;32m'Environment installed.$'\033[0m'
