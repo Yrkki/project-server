@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "echo if [ \"$(date +%u)\" -eq 5 ]; then snyk test; else echo Skipped test.; fi | bash",
-    "snyk-protect": "echo if [ \"$(date +%u)\" -eq 5 ]; then snyk protect; else echo Skipped snyk-protect.; fi | bash",
+    "test": "echo npx snyk test",
+    "snyk-protect": "echo npx snyk protect",
     "prepare": "npm run snyk-protect",
     "dev:plan:update:report:action:update-packages": "npm-run-all update-packages:*",
     "update-packages:install": "npm install --legacy-peer-deps",
