@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "snyk test",
-    "snyk-protect": "snyk protect",
+    "test": "echo if [ \"$(date +%u)\" -eq 5 ]; then snyk test; else echo Skipped test.; fi | bash",
+    "snyk-protect": "echo if [ \"$(date +%u)\" -eq 5 ]; then snyk protect; else echo Skipped snyk-protect.; fi | bash",
     "prepare": "npm run snyk-protect",
     "dev:plan:update:report:action:update-packages": "npm-run-all update-packages:*",
     "update-packages:install": "npm install --legacy-peer-deps",
@@ -27,10 +27,10 @@
     "mime-types": "^2.1.31",
     "morgan": "~1.10.0",
     "ms": "^2.1.3",
-    "nconf": "^0.11.2",
+    "nconf": "^0.11.3",
     "pug": "^3.0.2",
     "serve-favicon": "~2.5.0",
-    "snyk": "^1.630.0",
+    "snyk": "^1.641.0",
     "spdy": "^4.0.2",
     "url-exists": "^1.0.3"
   },
