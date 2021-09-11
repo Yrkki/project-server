@@ -1,6 +1,6 @@
 # Life Project Server
 
-Forward proxy for the LifeSpan family of products
+Forward proxy for the LifeSpan℠. family of products
 
 This project was generated with [Express' application generator](https://github.com/expressjs/generator) version 4.15.5.
 
