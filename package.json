@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "echo npx snyk test",
-    "snyk-protect": "echo npx snyk protect",
+    "snyk-protect": "echo npx snyk-protect",
     "prepare": "npm run snyk-protect",
     "dev:plan:update:report:action:update-packages": "npm-run-all update-packages:*",
     "update-packages:install": "npm install --legacy-peer-deps",
@@ -19,6 +19,7 @@
   "author": "jorich",
   "license": "MIT",
   "dependencies": {
+    "@snyk/protect": "^1.863.0",
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",
@@ -30,7 +31,6 @@
     "nconf": "^0.11.3",
     "pug": "^3.0.2",
     "serve-favicon": "~2.5.0",
-    "snyk": "^1.863.0",
     "spdy": "^4.0.2",
     "url-exists": "^1.0.3"
   },
