@@ -19,7 +19,7 @@
   "author": "jorich",
   "license": "MIT",
   "dependencies": {
-    "@snyk/protect": "^1.913.0",
+    "@snyk/protect": "^1.914.0",
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",
