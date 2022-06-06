@@ -17,7 +17,7 @@
     "ProjectServer"
   ],
   "author": "jorich",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@snyk/protect": "^1.946.0",
     "compression": "^1.7.4",
