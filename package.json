@@ -37,8 +37,5 @@
   "engines": {
     "node": "<20"
   },
-  "snyk": true,
-  "devDependencies": {
-    "typescript": "^4.9.3"
-  }
+  "snyk": true
 }
