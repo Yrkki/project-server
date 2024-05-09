@@ -29,13 +29,11 @@
     "morgan": "~1.10.0",
     "ms": "^2.1.3",
     "nconf": "^0.12.1",
+    "npm-run-all": "^4.1.5",
     "pug": "^3.0.2",
     "serve-favicon": "~2.5.0",
     "spdy": "^4.0.2",
     "url-exists": "^1.0.3"
-  },
-  "engines": {
-    "node": "<22"
   },
   "snyk": true
 }
