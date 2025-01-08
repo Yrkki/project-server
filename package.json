@@ -19,7 +19,7 @@
   "author": "jorich",
   "license": "Apache-2.0",
   "dependencies": {
-    "@snyk/protect": "^1.1294.3",
+    "@snyk/protect": "^1.1295.0",
     "compression": "^1.7.5",
     "cookie-parser": "~1.4.7",
     "cors": "^2.8.5",
