@@ -19,11 +19,11 @@
   "author": "jorich",
   "license": "Apache-2.0",
   "dependencies": {
-    "@snyk/protect": "^1.1296.2",
+    "@snyk/protect": "^1.1297.1",
     "compression": "^1.8.0",
     "cookie-parser": "~1.4.7",
     "cors": "^2.8.5",
-    "debug": "~4.4.0",
+    "debug": "~4.4.1",
     "express": "~5.1.0",
     "mime-types": "^3.0.1",
     "morgan": "~1.10.0",
