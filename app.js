@@ -121,7 +121,7 @@ app.use(cors());
 
 // Redirect http to https
 /*eslint complexity: ["error", 5]*/
-app.get('*', function (req, res, next) {
+app.get(/(.*)/, function (req, res, next) {
   console.debug(`app.js: get: req.protocol: ${req.protocol}`);
   if ((!req.secure || req.headers['x-forwarded-proto'] !== 'https') &&
     !['true', 'TRUE'].includes(skipRedirectToHttps) &&
