@@ -33,7 +33,7 @@
     "pug": "^3.0.4",
     "serve-favicon": "~2.5.1",
     "spdy": "^4.0.2",
-    "url-exists": "^1.0.3"
+    "url-exist": "^3.0.1"
   },
   "snyk": true
 }
